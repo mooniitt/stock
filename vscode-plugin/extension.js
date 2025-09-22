@@ -32,18 +32,23 @@ function activate(context) {
 
 // 更新股票信息
 async function updateStock() {
-    try {
-        // 从 API 获取数据
-        const res = await fetch(API_URL);
-        const data = await res.json();
-        const lastRate = data.changeRate;
-        // 根据涨跌设置前缀
-        const prefix = lastRate.startsWith('-') ? '↓' : '↑';
-        // 更新状态栏文本
-        myStatusBarItem.text = `${prefix}${lastRate}`;
-    } catch (err) {
-        // 获取失败时显示错误图标
-        myStatusBarItem.text = "❌";
+    const hour = new Date().getHours();
+    if (hour >= 9 && hour < 15) {
+        try {
+            // 从 API 获取数据
+            const res = await fetch(API_URL);
+            const data = await res.json();
+            const lastRate = data.changeRate;
+            // 根据涨跌设置前缀
+            const prefix = lastRate.startsWith('-') ? '↓' : '↑';
+            // 更新状态栏文本
+            myStatusBarItem.text = `${prefix}${lastRate}`;
+        } catch (err) {
+            // 获取失败时显示错误图标
+            myStatusBarItem.text = "❌";
+        }
+    } else {
+        myStatusBarItem.text = "keep slow";
     }
 }
 
