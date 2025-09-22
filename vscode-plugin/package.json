@@ -1,0 +1,26 @@
+{
+  "name": "vscode-plugin",
+  "version": "1.0.1",
+  "description": "",
+  "main": "./extension.js",
+  "engines": {
+    "vscode": "^1.85.0"
+  },
+  "activationEvents": [
+    "*"
+  ],
+  "scripts": {
+    "test": "node ./test/runTest.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "node-fetch": "^2.6.1"
+  },
+  "devDependencies": {
+    "@types/vscode": "^1.85.0",
+    "vscode-test": "^1.5.0",
+    "vsce": "^2.15.0"
+  }
+}
