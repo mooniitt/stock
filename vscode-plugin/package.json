@@ -1,22 +1,31 @@
 {
   "name": "slow-is-fast",
+  "displayName": "Stock Watcher",
   "version": "1.0.2",
-  "description": "",
+  "description": "A stock viewer for VSCode, helping you keep an eye on the market while you code.",
   "main": "./extension.js",
   "engines": {
     "vscode": "^1.85.0"
   },
   "activationEvents": [
-    "*"
+    "onStartupFinished"
   ],
   "scripts": {
     "test": "node ./test/runTest.js",
     "vsix": "vsce package"
   },
-  "keywords": [],
-  "author": "",
+  "keywords": ["stock", "leek", "vscode", "finance"],
+  "author": "mit-xl",
   "license": "ISC",
   "icon": "logo.png",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/mit-xl/mcp-stock-cn.git"
+  },
+  "homepage": "https://github.com/mit-xl/mcp-stock-cn",
+  "bugs": {
+    "url": "https://github.com/mit-xl/mcp-stock-cn/issues"
+  },
   "dependencies": {
     "node-fetch": "^2.6.1"
   },
