@@ -10,13 +10,23 @@ const API_URL = `http://localhost:3000/quote?symbol=${DEFAULT_SYMBOL}`;
 let myStatusBarItem;
 // 定时器
 let interval;
+// 控制是否显示股票信息
+let showStockInfo = true;
 
 /**
  * @param {vscode.ExtensionContext} context
  */
 function activate(context) {
+    // 注册切换命令
+    const commandId = 'extension.toggleStockDisplay';
+    context.subscriptions.push(vscode.commands.registerCommand(commandId, () => {
+        showStockInfo = !showStockInfo;
+        updateStock(); // 立即更新以反映切换
+    }));
+
     // 创建状态栏项
     myStatusBarItem = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Right, 100);
+    myStatusBarItem.command = commandId; // 关联命令
     context.subscriptions.push(myStatusBarItem);
 
     // 初始显示股票代码
@@ -32,6 +42,11 @@ function activate(context) {
 
 // 更新股票信息
 async function updateStock() {
+    if (!showStockInfo) {
+        myStatusBarItem.text = "keep slow";
+        return;
+    }
+
     const hour = new Date().getHours();
     if (hour >= 9 && hour < 15) {
         try {
