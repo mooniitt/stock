@@ -77,12 +77,7 @@ function formatQuoteText(quote) {
 
   // 字段对齐，适合多行显示
   return `
-📊 ${quote.name} (${quote.symbol})
-💰 价格: ${currentPrice} (${sign}${changeRate})
-📈 开盘: ${quote.open} 最高: ${quote.high} 最低: ${quote.low}
-📦 成交量: ${(Number(quote.volume) / 100).toFixed(0)} 手
-💸 成交额: ${(Number(quote.amount) / 10000).toFixed(2)} 万
-🕒 更新时间: ${quote.date} ${quote.time}
+📊 ${quote.name} (${sign}${changeRate})
 -------------------------------------`;
 }
 
