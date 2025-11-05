@@ -14,7 +14,7 @@ app.use(express.static(".")); // 添加静态文件服务
 
 // 添加 /q 路由
 app.get("/q", (req, res) => {
-  res.sendFile(path.join(__dirname, "index.html"));
+  res.sendFile(path.join(__dirname, "mac.html"));
 });
 
 const SINA_API_BASE = "https://hq.sinajs.cn/list";
@@ -76,9 +76,7 @@ function formatQuoteText(quote) {
   const sign = changeRate.startsWith("-") ? "" : "+";
 
   // 字段对齐，适合多行显示
-  return `
-📊 ${quote.name} (${sign}${changeRate})
--------------------------------------`;
+  return `${quote.name} (${sign}${changeRate})`;
 }
 
 
@@ -102,7 +100,9 @@ function formatQuote(quote) {
   };
 }
 
-// 路由：GET /quote?symbol=sh600000,sz301526
+// 路由：GET /quote?symbol=sh600000 
+
+// 路由：GET /quote?symbol=sh600000
 app.get("/quote", async (req, res) => {
   const schema = z.object({
     symbol: z.string().min(2),
@@ -112,29 +112,16 @@ app.get("/quote", async (req, res) => {
     return res.status(400).json({ error: "Invalid symbol parameter" });
   }
 
-  // 支持多个 symbol，用逗号分隔
-  const symbols = parseResult.data.symbol.split(",").map((s) => s.trim()).filter(Boolean);
-  if (symbols.length === 0) {
-    return res.status(400).json({ error: "No valid symbols provided" });
-  }
-
+  const { symbol } = parseResult.data;
   try {
-    // 并发请求多个股票数据
-    const results = await Promise.all(
-      symbols.map(async (symbol) => {
-        try {
-          const quoteData = await makeStockRequest(symbol);
-          if (!quoteData) {
-            return { symbol, error: "Failed to retrieve stock data" };
-          }
-          return formatQuote(quoteData);
-        } catch (err) {
-          return { symbol, error: err.message };
-        }
-      })
-    );
+    const quoteData = await makeStockRequest(symbol);
+    if (!quoteData) {
+      return res
+        .status(500)
+        .json({ error: `Failed to retrieve stock data for ${symbol}` });
+    }
 
-    res.json(results);
+    res.json(formatQuote(quoteData));
   } catch (error) {
     res.status(500).json({ error: error.message });
   }

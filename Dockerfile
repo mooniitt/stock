@@ -1,5 +1,12 @@
+# 重启服务
+# docker stop stock-app
+# docker rm stock-app
+# docker build -t stock-server .
+# docker run -d -p 3000:3000 --name stock-app stock-server
+
+
 # Use an official Node.js runtime as a parent image
-FROM node:18-slim
+FROM node:20-slim
 
 # Set the working directory in the container
 WORKDIR /usr/src/app

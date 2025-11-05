@@ -5,17 +5,17 @@
   <meta charset="UTF-8">
   <title>加载中...</title>
   <script>
-    const DEFAULT_SYMBOL = "sh603256";
-    const API_URL = `http://localhost:3000/quote?symbol=${DEFAULT_SYMBOL}`;
+    const DEFAULT_SYMBOL = "sh601138,sz300490,sz002759";
+    const API_URL = `http://localhost:3000/cli?symbol=${DEFAULT_SYMBOL}`;
     let counter = 0;
     let lastRate = "";
 
     async function fetchChange() {
       try {
         const res = await fetch(API_URL);
-        const data = await res.json();
-        lastRate = data.changeRate;
-        updateTitle();
+        const data = await res.text();
+        lastRate = data;
+        // updateTitle();
       } catch (err) {
         console.error("获取失败:", err);
         lastRate = "❌";
@@ -26,12 +26,14 @@
     function updateTitle() {
       counter++;
       const time = new Date().toLocaleTimeString('zh-CN', { hour12: false });
-      const prefix = lastRate.startsWith('-') ? '↓' : '↑';
-      const formattedCounter = String(counter).padStart(5, '0');
+      // const prefix = lastRate.startsWith('-') ? '↓' : '↑';
+      // const formattedCounter = String(counter).padStart(5, '0');
       
-      document.getElementById('counter').textContent = formattedCounter;
-      document.getElementById('symbol').textContent = `${DEFAULT_SYMBOL} ${lastRate}`;
-      document.title = `${prefix}${lastRate} ⏱${time}`;
+      // document.getElementById('counter').textContent = formattedCounter;
+      // document.getElementById('symbol').textContent = `${DEFAULT_SYMBOL} ${lastRate}`;
+      // document.title = `${prefix}${lastRate} ⏱${time}`;
+      document.title = `⏱${time}`;
+      document.getElementById('symbol').textContent = `${lastRate}`;
     }
 
     setInterval(fetchChange, 1000);
@@ -45,7 +47,7 @@
   </style>
 </head>
 <body>
-    <div id="counter">0</div>
+    <!-- <div id="counter">0</div> -->
     <div id="symbol"></div>
 </body>
 </html>
