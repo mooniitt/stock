@@ -64,6 +64,28 @@ function parseSinaStockData(text, symbol) {
     time: values[31],
   };
 }
+// 优化排版格式，适合控制台输出或日志
+function formatQuoteText(quote) {
+  const closePrice = Number(quote.close);
+  const currentPrice = Number(quote.price);
+  const changeRate =
+    closePrice === 0
+      ? "0.00%"
+      : (((currentPrice - closePrice) / closePrice) * 100).toFixed(2) + "%";
+
+  const sign = changeRate.startsWith("-") ? "" : "+";
+
+  // 字段对齐，适合多行显示
+  return `
+📊 ${quote.name} (${quote.symbol})
+💰 价格: ${currentPrice} (${sign}${changeRate})
+📈 开盘: ${quote.open} 最高: ${quote.high} 最低: ${quote.low}
+📦 成交量: ${(Number(quote.volume) / 100).toFixed(0)} 手
+💸 成交额: ${(Number(quote.amount) / 10000).toFixed(2)} 万
+🕒 更新时间: ${quote.date} ${quote.time}
+-------------------------------------`;
+}
+
 
 // 格式化展示
 function formatQuote(quote) {
@@ -85,7 +107,7 @@ function formatQuote(quote) {
   };
 }
 
-// 路由：GET /quote?symbol=sh600000
+// 路由：GET /quote?symbol=sh600000,sz301526
 app.get("/quote", async (req, res) => {
   const schema = z.object({
     symbol: z.string().min(2),
@@ -95,20 +117,63 @@ app.get("/quote", async (req, res) => {
     return res.status(400).json({ error: "Invalid symbol parameter" });
   }
 
-  const { symbol } = parseResult.data;
-  try {
-    const quoteData = await makeStockRequest(symbol);
-    if (!quoteData) {
-      return res
-        .status(500)
-        .json({ error: `Failed to retrieve stock data for ${symbol}` });
-    }
+  // 支持多个 symbol，用逗号分隔
+  const symbols = parseResult.data.symbol.split(",").map((s) => s.trim()).filter(Boolean);
+  if (symbols.length === 0) {
+    return res.status(400).json({ error: "No valid symbols provided" });
+  }
 
-    res.json(formatQuote(quoteData));
+  try {
+    // 并发请求多个股票数据
+    const results = await Promise.all(
+      symbols.map(async (symbol) => {
+        try {
+          const quoteData = await makeStockRequest(symbol);
+          if (!quoteData) {
+            return { symbol, error: "Failed to retrieve stock data" };
+          }
+          return formatQuote(quoteData);
+        } catch (err) {
+          return { symbol, error: err.message };
+        }
+      })
+    );
+
+    res.json(results);
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
 });
+
+app.get("/cli", async (req, res) => {
+  const schema = z.object({
+    symbol: z.string().min(2),
+  });
+  const parseResult = schema.safeParse(req.query);
+  if (!parseResult.success) {
+    return res.status(400).send("❌ Invalid symbol parameter");
+  }
+
+  const symbols = parseResult.data.symbol.split(",").map(s => s.trim()).filter(Boolean);
+
+  try {
+    const results = await Promise.all(symbols.map(async (symbol) => {
+      try {
+        const quoteData = await makeStockRequest(symbol);
+        if (!quoteData) return `⚠️ ${symbol}: 无法获取数据`;
+        return formatQuoteText(quoteData);
+      } catch (err) {
+        return `❌ ${symbol}: ${err.message}`;
+      }
+    }));
+
+    res.type("text/plain").send(results.join("\n"));
+  } catch (error) {
+    res.status(500).send("❌ " + error.message);
+  }
+});
+
+
 
 app.listen(PORT, () => {
   console.log(`📈 Stock HTTP server running on http://localhost:${PORT}`);

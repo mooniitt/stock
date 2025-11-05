@@ -65,7 +65,7 @@ app.whenReady().then(() => {
   tray.setContextMenu(contextMenu);
 
   updateTrayTitle(); // 立即更新一次
-  setInterval(updateTrayTitle, 5000); // 每5秒更新一次
+  setInterval(updateTrayTitle, 1000); // 每1秒更新一次
 
   app.on("activate", () => {
     if (BrowserWindow.getAllWindows().length === 0) {
