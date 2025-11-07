@@ -3,51 +3,70 @@
 <head>
   <link rel="icon" href="/favicon.ico" />
   <meta charset="UTF-8">
-  <title>加载中...</title>
-  <script>
-    const DEFAULT_SYMBOL = "sh601138,sz300490,sz002759";
-    const API_URL = `http://localhost:3000/cli?symbol=${DEFAULT_SYMBOL}`;
-    let counter = 0;
-    let lastRate = "";
+    <title>Mac 专用行情</title>
+    <script>
+      let DEFAULT_SYMBOL = "sh600021,sh601138,sz300490,sz002759"; // Default value
+      let timer;
 
-    async function fetchChange() {
-      try {
-        const res = await fetch(API_URL);
-        const data = await res.text();
-        lastRate = data;
-        // updateTitle();
-      } catch (err) {
-        console.error("获取失败:", err);
-        lastRate = "❌";
-        updateTitle();
+      // Fetch config from backend
+      async function fetchConfig() {
+        try {
+          const response = await fetch("/api/config");
+          const config = await response.json();
+          DEFAULT_SYMBOL = config.defaultSymbol;
+        } catch (error) {
+          console.error("Error fetching config:", error);
+        }
       }
-    }
 
-    function updateTitle() {
-      counter++;
-      const time = new Date().toLocaleTimeString('zh-CN', { hour12: false });
-      // const prefix = lastRate.startsWith('-') ? '↓' : '↑';
-      // const formattedCounter = String(counter).padStart(5, '0');
+      // 从 URL 获取 symbol，或者使用默认值
+      function getSymbolFromURL() {
+        const urlParams = new URLSearchParams(window.location.search);
+        return urlParams.get("symbol") || DEFAULT_SYMBOL;
+      }
+
+      // 获取行情
+      async function fetchQuotes(symbol) {
+        try {
+          const response = await fetch(`/cli?symbol=${symbol}`);
+          if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+          }
+          const data = await response.text();
+          updateContent(data);
+        } catch (error) {
+          console.error("Error fetching quotes:", error);
+          updateContent("❌ 获取失败");
+        }
+      }
+
+      // 更新页面内容
+      function updateContent(data) {
+        const time = new Date().toLocaleTimeString('zh-CN', { hour12: false });
+        document.title = `⏱${time}`;
+        document.getElementById('symbol').textContent = data;
+      }
+
+      // 开始获取数据
+      function startFetching() {
+        const symbol = getSymbolFromURL();
+        fetchQuotes(symbol); // 先立即执行一次
+        // 然后每 3 秒执行一次
+        timer = setInterval(() => fetchQuotes(symbol), 3000);
+      }
       
-      // document.getElementById('counter').textContent = formattedCounter;
-      // document.getElementById('symbol').textContent = `${DEFAULT_SYMBOL} ${lastRate}`;
-      // document.title = `${prefix}${lastRate} ⏱${time}`;
-      document.title = `⏱${time}`;
-      document.getElementById('symbol').textContent = `${lastRate}`;
-    }
+      document.addEventListener('DOMContentLoaded', async () => {
+        await fetchConfig();
+        startFetching();
+      });
 
-    setInterval(fetchChange, 1000);
-    setInterval(updateTitle, 1000);
-    window.onload = fetchChange;
-  </script>
+    </script>
   <style>
     body { cursor: none; }
-    #counter { opacity: 0.01; position: fixed; bottom: 0; right: 0; }
-    #symbol { font-size: 18px; font-family: monospace; color: #ccc; position: fixed; top: 10px; left: 10px; }
+    #symbol { font-size: 18px; font-family: monospace; color: #ccc; position: fixed; top: 10px; left: 10px; white-space: pre; }
   </style>
 </head>
 <body>
-    <!-- <div id="counter">0</div> -->
     <div id="symbol"></div>
 </body>
 </html>

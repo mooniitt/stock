@@ -9,8 +9,27 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const app = express();
 const PORT = process.env.PORT || 3000;
 
+let defaultSymbol = "sh600021,sh601138,sz300490,sz002759";
+
 app.use(cors()); // ✅ 开启 CORS 支持，默认允许所有来源
 app.use(express.static(".")); // 添加静态文件服务
+app.use(express.json()); // 解析 JSON 请求体
+
+app.get("/api/config", (req, res) => {
+  res.json({
+    defaultSymbol,
+  });
+});
+
+app.post("/api/config", (req, res) => {
+  const { symbol } = req.body;
+  if (typeof symbol === "string" && symbol.length > 0) {
+    defaultSymbol = symbol;
+    res.json({ message: "配置更新成功", defaultSymbol });
+  } else {
+    res.status(400).json({ error: "无效的 symbol" });
+  }
+});
 
 // 添加 /q 路由
 app.get("/q", (req, res) => {
