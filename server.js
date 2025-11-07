@@ -119,8 +119,6 @@ function formatQuote(quote) {
   };
 }
 
-// 路由：GET /quote?symbol=sh600000 
-
 // 路由：GET /quote?symbol=sh600000
 app.get("/quote", async (req, res) => {
   const schema = z.object({
