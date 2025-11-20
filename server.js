@@ -74,7 +74,7 @@ async function makeStockRequest(symbol) {
   } catch (error) {
     console.error("Error making stock request:", error);
     if (error instanceof TypeError && error.message === "fetch failed") {
-      throw new Error("Network request failed. Please check your connection.");
+      throw new Error("Error");
     }
     throw error;
   }

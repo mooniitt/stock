@@ -37,7 +37,23 @@ while true; do
     tput cup 0 0
     echo "$(date '+%H:%M:%S')"
     cat "$TMP_FILE"
+
+    # ===== 检查返回内容中 "+" 的数量 =====
+    PLUS_COUNT=$(grep -o '+' "$TMP_FILE" | wc -l)
+
+    if [ "$PLUS_COUNT" -ge 3 ]; then
+      # 如果当前目录存在 ohyeah.sh 并且可执行，就执行它
+      if [ -x ./ohyeah.sh ]; then
+        ./ohyeah.sh
+      elif [ -f ./ohyeah.sh ]; then
+        # 有文件但没执行权限，临时给个执行权限再跑
+        chmod +x ./ohyeah.sh
+        ./ohyeah.sh
+      fi
+    fi
+    # ====================================
   fi
+
   rm -f "$TMP_FILE"
   sleep 1
 done
