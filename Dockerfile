@@ -1,10 +1,3 @@
-# 重启服务
-# docker stop stock-app
-# docker rm stock-app
-# docker build -t stock-server .
-# docker run -d -p 3000:3000 --name stock-app stock-server
-
-
 # Use an official Node.js runtime as a parent image
 FROM node:20-slim
 
@@ -24,4 +17,4 @@ COPY . .
 EXPOSE 3000
 
 # Define the command to run your app
-CMD [ "node", "server.js" ]
+CMD ["node", "server.js"]
