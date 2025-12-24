@@ -1,5 +1,4 @@
 #!/bin/bash
-
 docker stop stock-app || true
 docker rm stock-app || true
 docker build -t stock-server .

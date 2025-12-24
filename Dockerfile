@@ -1,5 +1,5 @@
-# Use Node.js image from Alibaba Cloud mirror
-FROM registry.cn-hangzhou.aliyuncs.com/library/node:20-slim
+# Use an official Node.js runtime as a parent image
+FROM node:20-slim
 
 WORKDIR /usr/src/app
 
