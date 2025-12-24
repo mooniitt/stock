@@ -1,12 +1,13 @@
 <!DOCTYPE html>
 <html lang="zh">
+
 <head>
   <link rel="icon" href="66.png" />
   <meta charset="UTF-8">
   <title>加载中...</title>
   <script>
     const DEFAULT_SYMBOL = "sh603256";
-    const API_URL = `http://localhost:3000/quote?symbol=${DEFAULT_SYMBOL}`;
+    const API_URL = `http://118.31.223.166:3000/quote?symbol=${DEFAULT_SYMBOL}`;
     let counter = 0;
     let lastRate = "";
 
@@ -28,7 +29,7 @@
       const time = new Date().toLocaleTimeString('zh-CN', { hour12: false });
       const prefix = lastRate.startsWith('-') ? '↓' : '↑';
       const formattedCounter = String(counter).padStart(5, '0');
-      
+
       document.getElementById('counter').textContent = formattedCounter;
       document.getElementById('symbol').textContent = `${DEFAULT_SYMBOL} ${lastRate}`;
       document.title = `${prefix}${lastRate} ⏱${time}`;
@@ -39,13 +40,31 @@
     window.onload = fetchChange;
   </script>
   <style>
-    body { cursor: none; }
-    #counter { opacity: 0.01; position: fixed; bottom: 0; right: 0; }
-    #symbol { font-size: 18px; font-family: monospace; color: #ccc; position: fixed; top: 10px; left: 10px; }
+    body {
+      cursor: none;
+    }
+
+    #counter {
+      opacity: 0.01;
+      position: fixed;
+      bottom: 0;
+      right: 0;
+    }
+
+    #symbol {
+      font-size: 18px;
+      font-family: monospace;
+      color: #ccc;
+      position: fixed;
+      top: 10px;
+      left: 10px;
+    }
   </style>
 </head>
+
 <body>
-    <div id="counter">0</div>
-    <div id="symbol"></div>
+  <div id="counter">0</div>
+  <div id="symbol"></div>
 </body>
+
 </html>

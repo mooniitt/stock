@@ -1,6 +1,6 @@
 #!/bin/bash
 
-CONFIG_URL="http://localhost:3000/api/config"
+CONFIG_URL="http://118.31.223.166:3000/api/config"
 
 # 用 sed 提取 JSON 中的 defaultSymbol 值
 DEFAULT_SYMBOL=$(curl -s "$CONFIG_URL" | sed -n 's/.*"defaultSymbol":"\([^"]*\)".*/\1/p')
@@ -12,7 +12,7 @@ fi
 
 # 如果没有传入参数，就用默认值
 SYMBOL=${1:-$DEFAULT_SYMBOL}
-URL="http://localhost:3000/cli?symbol=${SYMBOL}"
+URL="http://118.31.223.166:3000/cli?symbol=${SYMBOL}"
 
 # 保存并进入全屏模式，隐藏光标
 tput smcup

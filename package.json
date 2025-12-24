@@ -5,11 +5,11 @@
   "main": "mac/main.cjs",
   "type": "module",
   "bin": {
-    "stock-mcp-server": "./build/index.js"
+    "stock-mcp-server": "./server.js"
   },
   "scripts": {
-    "build": "tsc",
-    "start": "node ./build/index.js",
+    "build": "echo 'No build step required'",
+    "start": "node ./server.js",
     "electron": "electron .",
     "mac": "electron . --platform=darwin",
     "dist": "electron-builder"

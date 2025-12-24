@@ -20,7 +20,7 @@ function createWindow() {
 function updateTrayTitle() {
   const request = net.request({
     method: "GET",
-    url: "http://localhost:3000/quote?symbol=sh603256",
+    url: "http://118.31.223.166:3000/quote?symbol=sh603256",
   });
 
   request.on("response", (response) => {

@@ -85,7 +85,7 @@ async function updateStock() {
   const hour = new Date().getHours();
   try {
     // 从 API 获取数据
-    const apiUrl = `http://localhost:3000/quote?symbol=${stockSymbol}`;
+    const apiUrl = `http://118.31.223.166:3000/quote?symbol=${stockSymbol}`;
     const res = await fetch(apiUrl);
     const data = await res.json();
     const price = data.price;
