@@ -1,48 +1,12 @@
 {
-  "name": "stock-mcp-server",
-  "version": "1.0.1",
-  "description": "A real-time stock quote server using Sina Finance API with MCP protocol",
-  "main": "mac/main.cjs",
-  "type": "module",
-  "bin": {
-    "stock-mcp-server": "./server.js"
-  },
+  "name": "stock-project",
+  "private": true,
+  "workspaces": [
+    "server",
+    "desktop"
+  ],
   "scripts": {
-    "build": "echo 'No build step required'",
-    "start": "node ./server.js",
-    "electron": "electron .",
-    "mac": "electron . --platform=darwin",
-    "dist": "electron-builder"
-  },
-  "files": [
-    "build"
-  ],
-  "keywords": [
-    "stock",
-    "mcp"
-  ],
-  "author": "yongyang",
-  "license": "ISC",
-  "dependencies": {
-    "@modelcontextprotocol/sdk": "^1.8.0",
-    "zod": "^3.24.2"
-  },
-  "devDependencies": {
-    "@types/node": "^22.13.14",
-    "electron": "^37.4.0",
-    "electron-builder": "^26.0.12",
-    "typescript": "^5.8.2"
-  },
-  "build": {
-    "appId": "com.example.stock-mcp-server",
-    "productName": "Stock Ticker",
-    "files": [
-      "mac/**/*"
-    ],
-    "mac": {
-      "category": "public.app-category.utilities",
-      "icon": "mac/66.png",
-      "identity": null
-    }
+    "server:start": "yarn workspace stock-server start",
+    "desktop:mac": "yarn workspace stock-desktop mac"
   }
 }

@@ -1,0 +1,29 @@
+{
+  "name": "stock-desktop",
+  "version": "1.0.0",
+  "description": "Stock Ticker Desktop App",
+  "main": "mac/main.cjs",
+  "type": "module",
+  "scripts": {
+    "electron": "electron .",
+    "mac": "electron . --platform=darwin",
+    "dist": "electron-builder"
+  },
+  "devDependencies": {
+    "electron": "^37.4.0",
+    "electron-builder": "^26.0.12"
+  },
+  "build": {
+    "appId": "com.example.stock-mcp-server",
+    "productName": "Stock Ticker",
+    "files": [
+      "mac/**/*",
+      "mac.html"
+    ],
+    "mac": {
+      "category": "public.app-category.utilities",
+      "icon": "mac/66.png",
+      "identity": null
+    }
+  }
+}
