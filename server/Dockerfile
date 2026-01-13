@@ -8,8 +8,8 @@ WORKDIR /usr/src/app
 # and completely IGNORE 'devDependencies' (electron, electron-builder).
 # This isolates the backend service from the large frontend build tools.
 COPY package.json yarn.lock ./
-RUN yarn config set registry https://r.cnpmjs.org/ && \
-    yarn install --production --frozen-lockfile && \
+RUN yarn config set registry https://registry.npmmirror.com && \
+    yarn install --production --frozen-lockfile --network-timeout 100000 && \
     yarn cache clean
 
 # Only copy necessary server files (optional, but good for separation)
