@@ -28,7 +28,7 @@ tput cup 0 0
 while true; do
   TMP_FILE=$(mktemp)
   # Get HTTP status code, and write body to temp file
-  HTTP_CODE=$(curl -s -w "%{http_code}" -o "$TMP_FILE" "$URL")
+  HTTP_CODE=$(curl -m 3 -s -w "%{http_code}" -o "$TMP_FILE" "$URL")
 
   if [ "$HTTP_CODE" -eq 500 ]; then
     clear
