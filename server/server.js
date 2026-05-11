@@ -62,12 +62,9 @@ const SINA_API_BASE = "https://hq.sinajs.cn/list";
 async function makeStockRequest(symbol) {
   const url = `${SINA_API_BASE}=${symbol}`;
   const headers = { Referer: "https://finance.sina.com.cn" };
-  const controller = new AbortController();
-  const timeoutId = setTimeout(() => controller.abort(), 3000); // 3 秒超时
 
   try {
-    const response = await fetch(url, { headers, signal: controller.signal });
-    clearTimeout(timeoutId);
+    const response = await fetch(url, { headers });
     if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
 
     const buffer = await response.arrayBuffer();
@@ -75,10 +72,9 @@ async function makeStockRequest(symbol) {
     const data = parseSinaStockData(text, symbol);
     return data;
   } catch (error) {
-    clearTimeout(timeoutId);
     console.error("Error making stock request:", error);
-    if (error.name === "AbortError" || error.message.includes("fetch failed")) {
-      throw new Error(`Timeout or Network Error for ${symbol}`);
+    if (error instanceof TypeError && error.message === "fetch failed") {
+      throw new Error("Error");
     }
     throw error;
   }

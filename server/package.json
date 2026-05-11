@@ -1,17 +1,10 @@
 {
-  "name": "stock-project",
-  "private": true,
-  "workspaces": [
-    "server",
-    "desktop"
-  ],
-  "scripts": {
-    "server:start": "yarn workspace stock-server start",
-    "desktop:mac": "yarn workspace stock-desktop mac"
-  },
+  "name": "stock-server",
+  "version": "1.0.0",
+  "type": "module",
+  "main": "server.js",
   "dependencies": {
-    "cors": "^2.8.6",
-    "express": "^5.2.1",
-    "zod": "^4.3.6"
+    "@modelcontextprotocol/sdk": "^1.8.0",
+    "zod": "^3.24.2"
   }
 }
