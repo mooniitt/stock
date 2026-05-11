@@ -7,6 +7,14 @@
   ],
   "scripts": {
     "server:start": "yarn workspace stock-server start",
-    "desktop:mac": "yarn workspace stock-desktop mac"
+    "desktop:mac": "yarn workspace stock-desktop mac",
+    "monitor:stock": "node server/monitor-stock.mjs",
+    "monitor:jiangbolong": "node server/monitor-stock.mjs --symbol=江波龙",
+    "monitor:dongshan": "node server/monitor-stock.mjs --symbol=东山精密",
+    "monitor:huazi": "node server/monitor-stock.mjs --symbol=华自科技",
+    "monitor:nuode": "node server/monitor-stock.mjs --symbol=诺德股份",
+    "monitor:shfilm": "node server/monitor-stock.mjs --symbol=上海电影",
+    "monitor:honghe": "node server/monitor-stock.mjs --symbol=宏和科技",
+    "monitor:watchlist": "node server/monitor-stock.mjs --watchlist"
   }
 }
