@@ -107,7 +107,7 @@ function formatQuoteText(quote) {
   const price = Number(quote.price);
   const rate = close === 0 ? "0.00%" : (((price - close) / close) * 100).toFixed(2) + "%";
   const sign = rate.startsWith("-") ? "" : "+";
-  return `${quote.name} (${sign}${rate})`;
+  return `${quote.name} ${price.toFixed(2)} (${sign}${rate})`;
 }
 
 function formatQuote(quote) {
