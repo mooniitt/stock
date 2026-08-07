@@ -26,14 +26,16 @@ CLEAR = "\033[2J"       # Clear screen
 CUP_0_0 = "\033[H"      # Move cursor to top-left
 
 # ANSI Color Codes
-COLOR_RESET   = "\033[0m"
-COLOR_BOLD    = "\033[1m"
-COLOR_RED     = "\033[1;31m"  # Red for Up (+)
-COLOR_GREEN   = "\033[1;32m"  # Green for Down (-)
-COLOR_GRAY    = "\033[90m"    # Gray for Flat (0)
-COLOR_YELLOW  = "\033[1;33m"  # Yellow / Gold
-COLOR_CYAN    = "\033[1;36m"  # Cyan for Symbols
-COLOR_WHITE   = "\033[1;37m"  # Bright White
+COLOR_RESET     = "\033[0m"
+COLOR_BOLD      = "\033[1m"
+COLOR_RED       = "\033[1;31m"  # Red for Up (+)
+COLOR_RED_DIM   = "\033[2;31m"  # Dim Red
+COLOR_GREEN     = "\033[1;32m"  # Green for Down (-)
+COLOR_GREEN_DIM = "\033[2;32m"  # Dim Green
+COLOR_GRAY      = "\033[90m"    # Gray for Flat (0)
+COLOR_YELLOW    = "\033[1;33m"  # Yellow / Gold
+COLOR_CYAN      = "\033[1;36m"  # Cyan for Symbols
+COLOR_WHITE     = "\033[1;37m"  # Bright White
 
 
 def get_trading_status() -> tuple:
@@ -45,10 +47,15 @@ def get_trading_status() -> tuple:
     t1300 = datetime.time(13, 0)
     t1500 = datetime.time(15, 0)
 
+    # 呼吸效果：根据秒数的奇偶在亮色与暗色之间切换
+    is_bright = (now.second % 2 == 0)
+
     if now.weekday() < 5 and ((t915 <= t <= t1130) or (t1300 <= t <= t1500)):
-        return True, "●", COLOR_GREEN
+        color = COLOR_GREEN if is_bright else COLOR_GREEN_DIM
+        return True, "•", color
     else:
-        return False, "●", COLOR_RED
+        color = COLOR_RED if is_bright else COLOR_RED_DIM
+        return False, "•", color
 
 
 def wcwidth(s: str) -> int:
