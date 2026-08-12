@@ -39,23 +39,34 @@ COLOR_WHITE     = "\033[1;37m"  # Bright White
 
 
 def get_trading_status() -> tuple:
-    """Check if current time is within A-share trading hours (Mon-Fri 09:15-11:30, 13:00-15:00)."""
+    """Check trading hours (交易时间) and return current market status and indicator color."""
     now = datetime.datetime.now()
     t = now.time()
+
     t915 = datetime.time(9, 15)
+    t930 = datetime.time(9, 30)
     t1130 = datetime.time(11, 30)
     t1300 = datetime.time(13, 0)
     t1500 = datetime.time(15, 0)
+    t1530 = datetime.time(15, 30)
 
-    # 呼吸效果：根据秒数的奇偶在亮色与暗色之间切换
-    is_bright = (now.second % 2 == 0)
-
-    if now.weekday() < 5 and ((t915 <= t <= t1130) or (t1300 <= t <= t1500)):
-        color = COLOR_GREEN if is_bright else COLOR_GREEN_DIM
-        return True, "•", color
+    # Trading Hours (交易时间) logic for weekdays (Mon-Fri)
+    if now.weekday() < 5:
+        if (t930 <= t <= t1130) or (t1300 <= t <= t1500):
+            # Trading: 09:30-11:30, 13:00-15:00 (交易中)
+            return True, "交易中", COLOR_GREEN
+        elif t915 <= t < t930:
+            # Pre-market: 09:15-09:30 (盘前)
+            return False, "盘前", COLOR_YELLOW
+        elif t1500 < t <= t1530:
+            # After-hours: 15:00-15:30 (盘后)
+            return False, "盘后", COLOR_YELLOW
+        else:
+            # Closed: Outside active market hours (已休市)
+            return False, "已休市", COLOR_RED
     else:
-        color = COLOR_RED if is_bright else COLOR_RED_DIM
-        return False, "•", color
+        # Closed: Weekends (已休市)
+        return False, "已休市", COLOR_RED
 
 
 def wcwidth(s: str) -> int:
@@ -124,15 +135,10 @@ def render_simple_ticker(quotes: list) -> str:
     valid_quotes = [q for q in quotes if not q.get("error")]
 
     def get_simple_rate(q):
-        try:
-            price_val = float(q.get("price", 0.0))
-            open_val = float(q.get("open", 0.0))
-        except (ValueError, TypeError):
-            price_val = open_val = 0.0
         raw_chg_rate = str(q.get("changeRate", "0.00%")).strip()
-        if raw_chg_rate.startswith("-") or (open_val > 0 and price_val < open_val):
-            return raw_chg_rate if raw_chg_rate.startswith("-") else f"-{raw_chg_rate}"
-        elif raw_chg_rate in ("0.00%", "0%") or (price_val - open_val == 0 and price_val == open_val):
+        if raw_chg_rate.startswith("-"):
+            return raw_chg_rate
+        elif raw_chg_rate in ("0.00%", "0%"):
             return raw_chg_rate
         else:
             return f"+{raw_chg_rate}" if not raw_chg_rate.startswith("+") else raw_chg_rate
@@ -156,10 +162,6 @@ def render_simple_ticker(quotes: list) -> str:
             price_val = 0.0
 
         rate_str = get_simple_rate(q)
-        try:
-            open_val = float(q.get("open", 0.0))
-        except (ValueError, TypeError):
-            open_val = 0.0
 
         if rate_str.startswith("-"):
             color = COLOR_GREEN
@@ -188,21 +190,34 @@ def render_bitcoin_ticker(quotes: list) -> str:
     def get_row_info(q):
         try:
             price_val = float(q.get("price", 0.0))
-            open_val = float(q.get("open", 0.0))
             high_val = float(q.get("high", 0.0))
             low_val = float(q.get("low", 0.0))
         except (ValueError, TypeError):
-            price_val = open_val = high_val = low_val = 0.0
+            price_val = high_val = low_val = 0.0
 
         raw_chg_rate = str(q.get("changeRate", "0.00%")).strip()
-        chg_amount = price_val - open_val if open_val > 0 else 0.0
 
-        if raw_chg_rate.startswith("-") or chg_amount < 0:
+        # 解析涨跌幅以推算昨收价与涨跌额
+        try:
+            rate_num = float(raw_chg_rate.replace("%", "").replace("+", "")) / 100.0
+            if (1.0 + rate_num) != 0:
+                pre_close = price_val / (1.0 + rate_num)
+                chg_amount = price_val - pre_close
+            else:
+                chg_amount = 0.0
+        except Exception:
+            rate_num = 0.0
+            chg_amount = 0.0
+
+        is_negative = raw_chg_rate.startswith("-")
+        is_zero = raw_chg_rate in ("0.00%", "0%") or rate_num == 0
+
+        if is_negative:
             color = COLOR_GREEN
             icon = "▼"
-            rate_str = raw_chg_rate if raw_chg_rate.startswith("-") else f"-{raw_chg_rate}"
-            chg_str = f"{icon} {chg_amount:.2f}"
-        elif raw_chg_rate in ("0.00%", "0%") or (chg_amount == 0 and price_val == open_val):
+            rate_str = raw_chg_rate
+            chg_str = f"{icon} {abs(chg_amount):.2f}"
+        elif is_zero:
             color = COLOR_GRAY
             icon = "▬"
             rate_str = raw_chg_rate
@@ -211,7 +226,7 @@ def render_bitcoin_ticker(quotes: list) -> str:
             color = COLOR_RED
             icon = "▲"
             rate_str = f"+{raw_chg_rate}" if not raw_chg_rate.startswith("+") else raw_chg_rate
-            chg_str = f"{icon} +{chg_amount:.2f}"
+            chg_str = f"{icon} +{abs(chg_amount):.2f}"
 
         return {
             "symbol": q.get("symbol", ""),
